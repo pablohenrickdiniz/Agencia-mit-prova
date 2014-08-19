@@ -11,7 +11,7 @@ class User extends AppModel{
     public $hasMany = array(
         'Comentario'=> array(
             'className' => 'Comentario',
-            'dependent' => 'true',
+            'dependent' => true,
             'foreignKey' => 'user_id'
         ));
     public $validate = array(

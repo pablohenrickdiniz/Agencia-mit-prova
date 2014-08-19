@@ -50,6 +50,18 @@ class UsersController extends AppController{
         }
     }
 
+    public function loginExists($login){
+        if($this->request->is('ajax')){
+            $usuario = $this->User->find('first',array('conditions' => array('User.login =' => $login)));
+            if(count($usuario) == 1){
+                echo 'true';
+                return true;
+            }
+        }
+        echo 'false';
+        return false;
+    }
+
     public function logout(){
         $this->redirect($this->Auth->logout());
     }
@@ -67,11 +79,16 @@ class UsersController extends AppController{
         if($this->request->is('post')){
             $this->request->data['User']['role'] = 'ROLE_COMMON';
             $this->User->create();
-            if($this->User->save($this->request->data)){
-                $this->redirect(array('action' => 'success'));
+            try{
+                if($this->User->save($this->request->data)){
+                    $this->redirect(array('action' => 'success'));
+                }
+                else{
+                    $this->Session->setFlash(__('O usuário não pôde ser salvo, tente novamente'));
+                }
             }
-            else{
-                $this->Session->setFlash(__('O usuário não pôde ser salvo, tente novamente'));
+            catch(Exception $ex){
+
             }
         }
     }
