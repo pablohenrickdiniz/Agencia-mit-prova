@@ -7,11 +7,38 @@
  */
 
 class UsersController extends AppController{
-    public $name = 'users';
+    public $name = 'Users';
 
     public function beforeFilter(){
         parent::beforeFilter();
-        $this->Auth->allow('add', 'logout');
+        $this->Auth->allow('logout','add');
+    }
+
+
+    public function isAuthorized($user=null){
+        if(parent::isAuthorized($user)){
+            $role = $user['role'];
+            if($role === 'ROLE_ADMIN'){
+                $denied = array('login','add');
+                if(!in_array($this->action, $denied)){
+                    return true;
+                }
+
+            }
+
+            if($role  === 'ROLE_COMMON'){
+                $allowed = array('view','edit','success','delete');
+                if(in_array($this->action,$allowed)){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function listarTodos(){
+        $this->set('usuarios',$this->User->find('all'));
     }
 
     public function login(){
@@ -27,10 +54,6 @@ class UsersController extends AppController{
         $this->redirect($this->Auth->logout());
     }
 
-    public function index(){
-        $this->User->recursive = 0;
-        $this->set('users',$this->paginate());
-    }
 
     public function view($id = null){
         $this->User->id = $id;
@@ -42,9 +65,10 @@ class UsersController extends AppController{
 
     public function add(){
         if($this->request->is('post')){
+            $this->request->data['User']['role'] = 'ROLE_COMMON';
             $this->User->create();
             if($this->User->save($this->request->data)){
-                $this->Session->setFlash(__('O usuário foi salvo com sucesso'));
+                $this->redirect(array('action' => 'success'));
             }
             else{
                 $this->Session->setFlash(__('O usuário não pôde ser salvo, tente novamente'));
@@ -52,19 +76,29 @@ class UsersController extends AppController{
         }
     }
 
+
+    public function success(){}
+
     public function edit($id = null){
         $this->User->id = $id;
         if(!$this->User->exists()){
             throw new NotFoundException('O usuário não foi encontrado');
         }
-        if($this->request->is('pos') || $this->request->is('put')){
-            if($this->User->save($this->request->data)){
-                $this->Session->setFlash(__('O usuário foi salvo com sucesso'));
-                $this->redirect(array('action' => 'index'));
+        if($this->request->is('post') || $this->request->is('put')){
+            $email = $this->request->data['User']['email'];
+            try{
+                if($this->User->saveField('email',$email)){
+                    $this->Session->setFlash(__('Informações salvas com sucesso'));
+                }
+                else{
+                    $this->Session->setFlash(__('O usuário não pôde ser alterado'));
+                }
             }
-            else{
-                $this->Session->setFlash(__('O usuário não pôde ser salvo'));
+            catch(Exception $ex){
+
             }
+
+            $this->redirect(array('action' => 'edit',$id));
         }
         else{
             $this->request->data = $this->User->read(null,$id);
@@ -73,15 +107,16 @@ class UsersController extends AppController{
     }
 
     public function delete($id=null){
-        if(!$this->request->is('post')){
-            throw new MethodNotAllowedException();
+        if($this->request->is('ajax')){
+            $this->layout = 'ajax';
+            $this->User->id = $id;
+            if(!$this->User->exists()){
+                throw new NotFoundException('O usuário não foi encontrado');
+            }
+            if($this->User->delete()){
+                $this->Session->setFlash(__('O usuário foi deletado com sucesso'));
+            }
+            $this->Session->setFlash(__('O usuário não pôde ser deletado'));
         }
-        $this->User->id = $id;
-        if($this->User->delete()){
-            $this->Session->setFlash(__('O usuário foi deletado com sucesso'));
-            $this->redirect(array('action' => 'index'));
-        }
-        $this->Session->setFlash(__('O usuário não pôde ser deletado'));
-        $this->redirect(array('action' => 'index'));
     }
 } 

@@ -34,12 +34,31 @@ class AppController extends Controller {
     public $components = array(
         'Session',
         'Auth' => array(
-            'loginRedirect' => array('controller'=>'posts','action' => 'index'),
-            'logoutRedirect' => array('controller' => 'pages', 'action' => 'display','home')
+            'loginRedirect' => array('controller'=>'noticias','action' => 'index'),
+            'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
+            'authorize' => array('Controller')
         )
     );
 
     public function beforeFilter(){
-        $this->Auth->allow('index','view');
+        parent::beforeFilter();
+        if(!is_null($this->Auth->user('id'))){
+            $role = $this->Auth->user('role');
+            $id = $this->Auth->user('id');
+            $this->set('AuthUser',array('id'=> $id,'logged' => true,'role' => $role));
+        }
+        else{
+            $this->set('AuthUser',array('logged' => false));
+        }
     }
+
+    public function isAuthorized($user=null){
+        if(!is_null($user)){
+            return true;
+        }
+        $this->redirect($this->Auth->logout());
+        return false;
+    }
+
+
 }

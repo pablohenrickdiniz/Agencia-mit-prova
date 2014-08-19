@@ -8,6 +8,12 @@
 App::uses('AuthComponent','Controller/Component');
 class User extends AppModel{
     public $name = 'User';
+    public $hasMany = array(
+        'Comentario'=> array(
+            'className' => 'Comentario',
+            'dependent' => 'true',
+            'foreignKey' => 'user_id'
+        ));
     public $validate = array(
         'username' => array(
             'required' => array(

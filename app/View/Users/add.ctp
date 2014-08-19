@@ -1,17 +1,31 @@
 <div class="users-form">
-    <?php echo $this->Form->create('user')?>
+    <?php echo $this->Form->create('User', array('class' => 'form-horizontal col-md-4 col-md-offset-4', 'role' => 'form'));?>
         <fieldset>
             <legend><?php echo __('Adicionar usuário'); ?></legend>
-            <?php
-                echo $this->Form->input('username',array('placeholder'=> 'usuario', 'type' => 'text'));
-                echo $this->Form->input('password',array('type' => 'password','placeholder' => '*********'));
-                echo $this->Form->input('tipo',
-                array('options'=>array(
-                        'ROLE_COMMON' => 'comum',
-                        'ROLE_ADMIN' => 'administrador'
-                    ))
-                );
-            ?>
+                <div class="form-group">
+                    <?php
+                        echo $this->Form->label('User.username','usuario');
+                        echo $this->Form->input('User.username',array('placeholder'=> 'usuario', 'type' => 'text','class' => 'form-control', 'label'=>false));
+                     ?>
+                </div>
+                <div class="form-group">
+                     <?php
+                        echo $this->Form->label('User.password','senha');
+                        echo $this->Form->input('User.password',array('type' => 'password','placeholder' => 'digite sua senha','class' => 'form-control', 'label' => false));
+                      ?>
+                </div>
+                <div class="form-group">
+                    <?php echo $this->Form->input('User.email',array('type' => 'email','placeholder' => 'example@email.com','class' => 'form-control'));?>
+                </div>
         </fieldset>
-    <?php echo $this->Form->end('cadastrar');?>
+    <?php
+        $options = array(
+            'label' => 'cadastrar',
+            'class' => 'btn btn-success col-md-4',
+            'div' => array(
+                'class' => 'form-group'
+            )
+        );
+        echo $this->Form->end($options);
+     ?>
 </div>

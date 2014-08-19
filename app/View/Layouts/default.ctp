@@ -14,50 +14,79 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
-$cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<?php echo $this->Html->charset(); ?>
-	<title>
-		<?php echo $cakeDescription ?>:
-		<?php echo $title_for_layout; ?>
-	</title>
-	<?php
-		echo $this->Html->meta('icon');
+    <?php echo $this->Html->charset(); ?>
+    <title>
 
-		echo $this->Html->css('cake.generic');
 
-		echo $this->fetch('meta');
-		echo $this->fetch('css');
-		echo $this->fetch('script');
-	?>
+    </title>
+    <?php
+    echo $this->Html->css('bootstrap.min.css');
+    echo $this->Html->script('Jquery.js');
+    echo $this->Html->script('bootstrap.min.js');
+    ?>
 </head>
 <body>
-	<div id="container">
-		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
-		</div>
-		<div id="content">
+<div id="container">
+    <div class="jumbotron">
+        <ul class="nav nav-pills">
+            <li>
+                <h1><?php echo $this->Html->link('Mit-Blogger', array('controller' => 'users', 'action' => 'login')); ?></h1>
+            </li>
+        </ul>
+    </div>
+    <div id="content">
+        <?php if ($AuthUser['logged']) { ?>
+            <ul class="nav nav-tabs" role="tablist">
+                <li <?php if ($this->action === 'index') {
+                    echo 'class="active"';
+                } ?>>
+                    <?php
+                    echo $this->Html->link('Notícias', array('controller' => 'noticias', 'action' => 'index'));
+                    ?>
+                </li>
+                <?php if ($AuthUser['role'] === 'ROLE_ADMIN') { ?>
+                    <li  <?php if ($this->action === 'listarTodos' && $this->params['controller'] === 'comentarios'){echo 'class="active"';} ?>>
+                        <?php
+                        echo $this->Html->link('Moderação', array('controller' => 'comentarios', 'action' => 'listarTodos'));
+                        ?>
+                    </li>
+                    <li <?php if ($this->action === 'listarTodos' && $this->params['controller'] === 'users') {echo 'class="active"';} ?>>
+                       <?php echo $this->Html->link('Usuários', array('controller' => 'users', 'action' => 'listarTodos'));?>
+                    </li>
+                <?php } ?>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Opções <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <?php
+                            echo $this->Html->link('Sair', array('controller' => 'users', 'action' => 'logout'));
+                            ?>
+                        </li>
+                        <li>
+                            <?php
+                            echo $this->Html->link('Editar usuario', array('controller' => 'users', 'action' => 'edit',$AuthUser['id']));
+                            ?>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        <?php
+        }
+        ?>
+        <div class="container">
+            <?php echo $this->fetch('content'); ?>
+        </div>
+    </div>
+    <div id="footer">
 
-			<?php echo $this->Session->flash(); ?>
-
-			<?php echo $this->fetch('content'); ?>
-		</div>
-		<div id="footer">
-			<?php echo $this->Html->link(
-					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
-					'http://www.cakephp.org/',
-					array('target' => '_blank', 'escape' => false, 'id' => 'cake-powered')
-				);
-			?>
-			<p>
-				<?php echo $cakeVersion; ?>
-			</p>
-		</div>
-	</div>
-	<?php echo $this->element('sql_dump'); ?>
+    </div>
+</div>
 </body>
 </html>
