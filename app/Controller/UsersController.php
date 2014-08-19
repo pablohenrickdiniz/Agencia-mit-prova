@@ -11,7 +11,7 @@ class UsersController extends AppController{
 
     public function beforeFilter(){
         parent::beforeFilter();
-        $this->Auth->allow('logout','add');
+        $this->Auth->allow('logout','add','loginExists','emailExists');
     }
 
 
@@ -50,16 +50,30 @@ class UsersController extends AppController{
         }
     }
 
-    public function loginExists($login){
+    public function loginExists($login = null){
+        $this->layout = 'ajax';
         if($this->request->is('ajax')){
-            $usuario = $this->User->find('first',array('conditions' => array('User.login =' => $login)));
-            if(count($usuario) == 1){
+            $usuario = $this->User->find('first',array('conditions' => array('User.username =' => $login)));
+            if(isset($usuario['User'])){
                 echo 'true';
-                return true;
+            }
+            else{
+                echo 'false';
             }
         }
-        echo 'false';
-        return false;
+    }
+
+    public function emailExists($email = null){
+        $this->layout = 'ajax';
+       if($this->request->is('ajax')){
+            $usuario = $this->User->find('first',array('conditions' => array('User.email =' => $email)));
+            if(isset($usuario['User'])){
+                echo 'true';
+            }
+            else{
+                echo 'false';
+            }
+       }
     }
 
     public function logout(){
