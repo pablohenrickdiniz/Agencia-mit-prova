@@ -11,7 +11,7 @@ class Comentario extends AppModel{
     public $belongsTo =
         array(
             'User'=>array(
-                'className' => 'Noticia',
+                'className' => 'User',
                 'foreignKey' => 'user_id'
             ),
             'Noticia' =>array(

@@ -51,7 +51,8 @@ $id = $noticia['Noticia']['id'];
 </div>
 <div class="container">
     <table class="table table-bordered">
-    <?php foreach ($comentarios as $comentario) {?>
+    <?php
+    foreach ($comentarios as $comentario) {?>
         <tr>
             <td>
                <div class="col-md-6">
